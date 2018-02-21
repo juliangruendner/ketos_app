@@ -1,4 +1,4 @@
-# Patient Preduct
+# Patient Predict
 
 Based on [Base App](https://github.com/juliangruendner/mlService_baseapp)
 
