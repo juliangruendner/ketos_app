@@ -1,0 +1,17 @@
+<form class="uk-form-stacked">
+
+    <div class="uk-margin">
+        <label class="uk-form-label" for="form-stacked-text">FHIR Base URL</label>
+        <div class="uk-form-controls">
+            <input class="uk-input uk-form-width-large" type="text" placeholder="FHIR Base URL" [(ngModel)]="fhirUrl" name="fhirUrl">
+        </div>
+    </div>
+
+    <div class="uk-margin">
+        <label class="uk-form-label" for="form-stacked-text">Patient IDs</label>
+        <textarea class="uk-textarea uk-form-width-large" rows="10" placeholder="Input Comma Separated Patient IDs Here" name="patient_ids" [(ngModel)]="patient_ids"></textarea>
+    </div>
+
+    <button class="uk-button uk-button-primary" type="submit" (click)="predict()" [disabled]="!patient_ids">Predict</button>
+
+</form>
