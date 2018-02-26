@@ -33,7 +33,14 @@ export class HomeComponent implements OnInit {
     
     var smart = FHIR.client({
       serviceUrl: this.fhirUrl,
+      auth: {
+        type: 'basic',
+        username: 'test',
+        password: 'test',
+      }
     });
+
+    (<any>window).smart = smart;
     
     this.predictions_done = false;
     this.predictions_running = true;
