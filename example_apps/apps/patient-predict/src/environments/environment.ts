@@ -6,7 +6,7 @@
 export const environment = {
   production: false,
   version: '(dev)',
-  serverUrl: 'http://46.101.216.15:8080/gtfhir/base',
+  serverUrl: 'http://ketos.ai:8080/gtfhir/base',
   defaultLanguage: 'en-US',
   supportedLanguages: [
     'en-US',
