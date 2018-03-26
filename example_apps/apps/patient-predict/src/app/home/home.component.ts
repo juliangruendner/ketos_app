@@ -1,6 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { environment } from '../../environments/environment'
 import { Prediction } from '../models/prediction'
+import { ActivatedRoute, Params } from '@angular/router';
+import { AuthorizationService } from '../services/authorization.service';
+import { AuthResponse } from '../models/authResponse';
 
 // Hack: fhirclient has no typescript support and is only meant to be imported in a <script> tag
 // This makes a object named FHIR globally available!
@@ -15,15 +18,37 @@ declare var FHIR: any;
 })
 export class HomeComponent implements OnInit {
   fhirUrl = environment.serverUrl;
+  authUrl = environment.authUrl;
+  clientID = environment.clientID;
+  clientSecret = environment.clientSecret;
   patient_ids: string;
+
+  redirectUrl: string;
+  authToken: string;
+  loginErrorMsg: string;
 
   patient_predictions: Prediction[] = [];
   predictions_running = false;
   predictions_done = false;
 
-  constructor() {}
+  constructor(private activatedRoute: ActivatedRoute, private authorizationService: AuthorizationService) {}
 
-  ngOnInit() {}
+  ngOnInit() {
+    this.redirectUrl = window.location.toString().split('?')[0]; // Get current url without parameters
+
+    this.activatedRoute.queryParams.subscribe((params: Params) => {
+      const authCode = params['code'];
+      if(authCode) {
+        this.authorizationService.authorizeCode(this.clientID, this.clientSecret, authCode, this.redirectUrl).subscribe((authResponse: AuthResponse) => {
+          this.authToken = authResponse.access_token;
+        });
+      }
+    });
+  }
+
+  login() {
+    this.authorizationService.requestCode(this.clientID, this.redirectUrl, this.fhirUrl, 'patient/*.read');
+  }
 
   predict() {
     const ids: number[] = [];
@@ -34,9 +59,8 @@ export class HomeComponent implements OnInit {
     var smart = FHIR.client({
       serviceUrl: this.fhirUrl,
       auth: {
-        type: 'basic',
-        username: 'test',
-        password: 'test',
+        type: 'bearer',
+        bearer: this.authToken
       }
     });
 
@@ -48,7 +72,7 @@ export class HomeComponent implements OnInit {
     
     var promises: any = [];
     ids.forEach(patient_id => {
-      promises.push(smart.api.search({type: "RiskAssessment", query: {subject: patient_id}}));
+      promises.push(smart.api.search({type: 'RiskAssessment', query: {subject: patient_id}}));
     });
 
     Promise.all(promises)

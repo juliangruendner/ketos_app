@@ -2,6 +2,7 @@ import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { HttpModule } from '@angular/http';
+import { HttpClientModule } from '@angular/common/http';
 import { TranslateModule } from '@ngx-translate/core';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 
@@ -13,11 +14,14 @@ import { SharedModule } from './shared/shared.module';
 import { HomeModule } from './home/home.module';
 import { AboutModule } from './about/about.module';
 
+import { AuthorizationService } from './services/authorization.service'
+
 @NgModule({
   imports: [
     BrowserModule,
     FormsModule,
     HttpModule,
+    HttpClientModule,
     TranslateModule.forRoot(),
     NgbModule.forRoot(),
     CoreModule,
@@ -30,6 +34,7 @@ import { AboutModule } from './about/about.module';
   ],
   declarations: [AppComponent],
   providers: [
+    AuthorizationService,
   ],
   bootstrap: [AppComponent]
 })
