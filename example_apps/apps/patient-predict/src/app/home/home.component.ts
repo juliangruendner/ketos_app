@@ -37,6 +37,7 @@ export class HomeComponent implements OnInit {
     this.redirectUrl = window.location.toString().split('?')[0]; // Get current url without parameters
 
     this.activatedRoute.queryParams.subscribe((params: Params) => {
+      this.loginErrorMsg = params['error_description'];
       const authCode = params['code'];
       if(authCode) {
         this.authorizationService.authorizeCode(this.clientID, this.clientSecret, authCode, this.redirectUrl).subscribe((authResponse: AuthResponse) => {
