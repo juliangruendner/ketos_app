@@ -9,7 +9,7 @@ Based on [Base App](https://github.com/juliangruendner/mlService_baseapp)
  npm install
  ```
  
-2. Launch development server, and open `localhost:4200` in your browser:
+2. Launch development server, and open `localhost:4201` in your browser:
  ```bash
  npm start
  ```
