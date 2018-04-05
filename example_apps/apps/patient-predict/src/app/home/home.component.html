@@ -19,6 +19,7 @@
         </div>
     </div>
 
+    <!--> Readd this when login works
     <div class="uk-margin">
         <label class="uk-form-label" for="form-stacked-text">Client ID</label>
         <div class="uk-form-controls">
@@ -32,15 +33,20 @@
             <input class="uk-input uk-form-width-large" type="text" placeholder="Client Secret" [(ngModel)]="clientSecret" name="clientSecret">
         </div>
     </div>
+    <-->
 
-    <div class="uk-margin" *ngIf="authToken">
+    <!-->TODO: add *ngIf="authToken" to only show predict button when login was successful<-->
+    <div class="uk-margin">
         <label class="uk-form-label" for="form-stacked-text">Patient IDs</label>
         <textarea class="uk-textarea uk-form-width-large" rows="10" placeholder="Input Comma Separated Patient IDs Here" name="patient_ids" [(ngModel)]="patient_ids"></textarea>
-        <button class="uk-button uk-button-primary" type="submit" (click)="predict()" [disabled]="!patient_ids" >Predict</button>
+        <div class="uk-margin">
+            <button class="uk-button uk-button-primary" type="submit" (click)="predict()" [disabled]="!patient_ids" >Predict</button>
+        </div>
     </div>
 
-    <button class="uk-button uk-button-secondary" type="submit" (click)="login()" *ngIf="!authToken">Login</button>
-
+    <!--> Readd this when login works
+        <button class="uk-button uk-button-secondary" type="submit" (click)="login()" *ngIf="!authToken">Login</button>
+    <-->
     <table class="uk-table uk-table-striped uk-table-small uk-width-1-3" *ngIf="predictions_done && patient_predictions?.length > 0">
         <thead>
             <tr>
