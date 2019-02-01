@@ -1,0 +1,27 @@
+.side-menu {
+    position: relative;
+    max-width: 350px;
+    transition: 1s;
+    height: 100%;
+    li {
+        padding: 5px 80px 5px 40px;
+        font-size: 15px;
+        text-transform: uppercase;
+        font-weight: 300;
+
+        &:hover, &.active {
+            background-color: rgba(255,255,255,0.15);
+            transition: 1s;
+            cursor: pointer;
+        }
+        a {
+            &:hover {
+                text-decoration: none;
+            }
+        }
+    }   
+}
+
+.logo-wrapper img{
+    width:150px;
+}

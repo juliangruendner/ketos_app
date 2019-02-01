@@ -1,0 +1,23 @@
+<div>
+<h1>Patients Haemoglobin levels by across age groups</h1>
+
+
+<form class="uk-grid-small" uk-grid>
+        <div class="uk-width-1-4@s">
+                <label class="uk-form-label" for="form-horizontal-text">Haemoglobin Wert 20-40</label>
+                <input class="uk-input uk-form-width-small" id="form-horizontal-text" type="number" required name="form_feature.name" [(ngModel)]="patientHbLevels.data2040">
+        </div>
+        <div class="uk-width-1-4@s">
+                <label class="uk-form-label" for="form-horizontal-text">Haemoglobin Wert 40-60</label>
+                <input class="uk-input uk-form-width-small" id="form-horizontal-text" type="number" required name="form_feature.name" [(ngModel)]="patientHbLevels.data4060">
+        </div>
+        <div class="uk-width-1-4@s">
+                <label class="uk-form-label" for="form-horizontal-text">Haemoglobin Wert >60 </label>
+                <input class="uk-input uk-form-width-small" id="form-horizontal-text" type="number" required name="form_feature.name" [(ngModel)]="patientHbLevels.data60">
+        </div>
+        <button (click)="addPatientData()">Patient zum Diagramm hinzufügen</button>
+</form>
+<hr class="uk-divider-icon">
+
+<canvas #hbChartElem></canvas>
+</div>

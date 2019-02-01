@@ -1,0 +1,13 @@
+<div class="side-menu">
+  <div class="logo-wrapper uk-padding">
+      <img src="assets/ketos_white.svg">
+  </div>
+
+  <div class="menu-wrapper">
+    <ul class="uk-list">
+      <ng-container *ngFor="let entry of entries">
+          <li (click)="gotoRoute(entry.url)" *ngIf="entry.isVisible" [ngClass]="{'active' : router.url == entry.url}"><span [attr.uk-icon]="'icon: '+entry.icon"></span>&nbsp;&nbsp;{{entry.name}}</li>
+      </ng-container>
+    </ul>
+  </div>
+</div>
