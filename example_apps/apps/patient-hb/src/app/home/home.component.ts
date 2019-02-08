@@ -181,21 +181,21 @@ export class HomeComponent implements OnInit {
       this.patientData.pop();
     }
 
-    if(this.patientHbLevels.data2040 != undefined && this.patientHbLevels.data2040 !=null){
+    if(this.patientHbLevels['data2040'] != undefined && this.patientHbLevels['data2040'] !=null){
       this.patientData.push(
-        {x:"20-30", y:this.patientHbLevels.data2040, r:5}
+        {x:"20-30", y:this.patientHbLevels['data2040'], r:5}
       )
     }
 
-    if(this.patientHbLevels.data4060 != undefined && this.patientHbLevels.data4060 !=null){
+    if(this.patientHbLevels['data4060'] != undefined && this.patientHbLevels['data4060'] !=null){
       this.patientData.push(
-        {x:"40-60", y:this.patientHbLevels.data4060, r:5}
+        {x:"40-60", y:this.patientHbLevels['data4060'], r:5}
       )
     }
 
-    if(this.patientHbLevels.data60 != undefined && this.patientHbLevels.data60 !=null){
+    if(this.patientHbLevels['data60'] != undefined && this.patientHbLevels['data60'] !=null){
       this.patientData.push(
-        {x:"> 60", y:this.patientHbLevels.data60, r:5}
+        {x:"> 60", y:this.patientHbLevels['data60'], r:5}
       )
     }
     

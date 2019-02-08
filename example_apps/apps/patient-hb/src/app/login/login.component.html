@@ -1,0 +1,32 @@
+<div class="login-container uk-background-primary">
+  <div class="login-box">
+    <div class="logo-wrapper">
+        <img src="assets/ketos_white.svg">
+    </div>
+    <div class="login-inner uk-card uk-card-default uk-card-body">
+      <h3 class="uk-card-title">Log In</h3>
+      <form (ngSubmit)="login()" [formGroup]="loginForm" novalidate>      
+        <div class="uk-margin">
+          <div class="uk-inline">
+            <span class="uk-form-icon" uk-icon="icon: user"></span>
+            <input class="uk-input" type="text" formControlName="username">
+          </div>
+        </div>
+      
+        <div class="uk-margin">
+          <div class="uk-inline">
+            <span class="uk-form-icon" uk-icon="icon: lock"></span>
+            <input class="uk-input" type="password" formControlName="password">
+          </div>
+        </div>    
+        
+        <div class="uk-margin">
+          <div class="uk-inline">
+            <button type="submit" class="uk-button uk-button-primary">Login</button>
+          </div>
+        </div>    
+        
+      </form>
+    </div>
+  </div>
+</div>

@@ -8,7 +8,7 @@ export const environment = {
   version: '(dev)',
   predictionUrl: 'http://localhost:5000',
   authUrl: 'http://ketos.ai:8060',
-  serverUrl: 'http://ketos.ai:8080/gtfhir/base',
+  serverUrl: 'http://localhost:5000',
   clientID: '41f8ae6d-5b2d-45f6-b44c-57067394cbe5',
   clientSecret: 'AIBJKmCmdgJqdkk3gtTETQ1Qf8hewQhBHMUyZSnqxLEZaWeXKrfyb4l9Iq1hgoz2fioB4ifoSu3t6c87nZ7DaXw',
   defaultLanguage: 'en-US',

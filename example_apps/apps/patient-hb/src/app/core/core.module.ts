@@ -7,16 +7,13 @@ import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 
 import { ShellComponent } from './shell/shell.component';
 import { HeaderComponent } from './shell/header/header.component';
+import { AuthenticationService } from './authentication/authentication.service';
+import { AuthenticationGuard } from './authentication/authentication.guard';
 import { I18nService } from './i18n.service';
-import { HttpService } from './http/http.service';
-import { HttpCacheService } from './http/http-cache.service';
 import { MenuComponent } from './menu/menu.component';
+import { UsernamePipe } from '../pipes/username.pipe';
 
-export function createHttpService(backend: ConnectionBackend,
-                                  defaultOptions: RequestOptions,
-                                  httpCacheService: HttpCacheService) {
-  return new HttpService(backend, defaultOptions, httpCacheService);
-}
+
 
 @NgModule({
   imports: [
@@ -29,16 +26,16 @@ export function createHttpService(backend: ConnectionBackend,
   declarations: [
     HeaderComponent,
     ShellComponent,
-    MenuComponent
+    MenuComponent,
+    UsernamePipe
   ],
   providers: [
+    AuthenticationService,
+    AuthenticationGuard,
     I18nService,
-    HttpCacheService,
-    {
-      provide: Http,
-      deps: [XHRBackend, RequestOptions, HttpCacheService],
-      useFactory: createHttpService
-    }
+  ],
+  exports: [
+    UsernamePipe
   ]
 })
 export class CoreModule {
