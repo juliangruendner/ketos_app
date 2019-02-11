@@ -1,8 +1,21 @@
 <div>
-<h1>Patients Haemoglobin levels by across age groups</h1>
+<h1>Patients Haemoglobin levels by age groups</h1>
 
 
 <form class="uk-grid-small" uk-grid>
+        <div class="uk-width-1-4@s">
+                <label class="uk-form-label" for="form-horizontal-text">Age</label>
+                <input class="uk-input uk-form-width-small" id="form-horizontal-text" type="number" required name="form_feature.name" [(ngModel)]="patientAge">
+        </div>
+        <div class="uk-width-1-4@s">
+                <label class="uk-form-label" for="form-horizontal-text">Haemoglobin Amount (g/dl)</label>
+                <input class="uk-input uk-form-width-small" id="form-horizontal-text" type="number" required name="form_feature.name" [(ngModel)]="patientHbLevel">
+        </div>
+
+        <button (click)="showPatientInfo()">Show patient Information</button>
+</form>
+
+<!--form class="uk-grid-small" uk-grid>
         <div class="uk-width-1-4@s">
                 <label class="uk-form-label" for="form-horizontal-text">Haemoglobin Wert 20-40</label>
                 <input class="uk-input uk-form-width-small" id="form-horizontal-text" type="number" required name="form_feature.name" [(ngModel)]="patientHbLevels['data2040']">
@@ -16,8 +29,28 @@
                 <input class="uk-input uk-form-width-small" id="form-horizontal-text" type="number" required name="form_feature.name" [(ngModel)]="patientHbLevels['data60']">
         </div>
         <button (click)="addPatientData()">Patient zum Diagramm hinzufügen</button>
-</form>
+</form-->
 <hr class="uk-divider-icon">
+<div *ngIf="patientPercentile > 0">
+                <table class="uk-table">
+                                <caption>Patient Information</caption>
+                                <thead>
+                                    <tr>
+                                        <th>Age</th>
+                                        <th>Haemoglobin Value (g/dl)</th>
+                                        <th>Percentile compared to Age group {{curPatientAgeGroup['minAge']}} to {{curPatientAgeGroup['maxAge']}}</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>{{patientAge}}</td>
+                                        <td>{{patientHbLevel}}</td>
+                                        <td>{{patientPercentile}}th</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+</div>
+<div *ngIf="patientPercentile < 0">There is no age group for the age {{patientAge}} => no patient specific information is available</div>
 
 <canvas #hbChartElem></canvas>
 </div>

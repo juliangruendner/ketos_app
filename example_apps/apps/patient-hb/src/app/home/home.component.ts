@@ -3,7 +3,6 @@ import { environment } from '../../environments/environment'
 import { Prediction } from '../models/prediction'
 import { ActivatedRoute, Params } from '@angular/router';
 import { AuthorizationService } from '../services/authorization.service';
-import { AuthResponse } from '../models/authResponse';
 import { Chart } from 'chart.js';
 import {PredictionService} from '../services/prediction.service';
 
@@ -33,17 +32,20 @@ export class HomeComponent implements OnInit {
   predictions_running = false;
   predictions_done = false;
 
-  data5thPer: any[]
-  data95thPer: any[]
-  dataMean: any[]
+  patientGroups: any [] = []
+  patientAge: number = -1
+  patientHbLevel: number 
+  patientPercentile: number
+
+  data025thPer: any[] = []
+  data957thPer: any[] = []
+  dataMean: any[] = []
+  dataLabels: any[] = []
+
 
   patientData: any[] = []
   patientHbLevels: any[]= []
-
-  canvasWidth :any
-  canvasHeight : any
-  ctx : any
-  canvasData: any
+  curPatientAgeGroup : any
 
   @ViewChild('hbChartElem') hbChartElem: any;
   hbChart: any;
@@ -52,126 +54,76 @@ export class HomeComponent implements OnInit {
 
   ngOnInit() {
     
-    this.predictionService.predict(1, {"patient_ids": "1"}).subscribe(resp => {
+    this.predictionService.predict(2, {"patient_ids": "1"}).subscribe(resp => {
       console.log(resp)
-      this.data5thPer = resp.prediction[0].prediction['quantile5']
+      /*this.data5thPer = resp.prediction[0].prediction['quantile5']
       this.data95thPer = resp.prediction[0].prediction['quantile95']
       this.dataMean = resp.prediction[0].prediction['average']
-      console.log(this.data5thPer)
+      this.initNewChart()*/
+      //this.data2_5thPer = predictionData2040['percentile2.5']
+      //his.data97_5thPer = predictionData2040['percentile97.5']
 
-      this.hbChart = new Chart(this.hbChartElem.nativeElement, {
-
-        type: 'line',
-        data: {
-            labels: ["20-30", "40-60", "> 60"],
-            datasets: [
-              {
-                label: "95th percentile",
-                fill: false,
-                lineTension: 0.1,
-                backgroundColor: "red",
-                borderColor: "red",
-                borderCapStyle: 'butt',
-                borderDash: [],
-                borderDashOffset: 0.0,
-                borderJoinStyle: 'miter',
-                pointBorderColor: "rgba(75,192,192,1)",
-                pointBackgroundColor: "#fff",
-                pointBorderWidth: 1,
-                pointHoverRadius: 5,
-                pointHoverBackgroundColor: "rgba(75,192,192,1)",
-                pointHoverBorderColor: "rgba(220,220,220,1)",
-                pointHoverBorderWidth: 2,
-                pointRadius: 1,
-                pointHitRadius: 10,
-                data: this.data95thPer,
-                spanGaps: false,
-            },
-                {
-                    label: "5th percentile",
-                    fill: 0,
-                    lineTension: 0.1,
-                    backgroundColor: "#f909002b",
-                    borderColor: "red",
-                    borderCapStyle: 'butt',
-                    borderDash: [],
-                    borderDashOffset: 0.0,
-                    borderJoinStyle: 'miter',
-                    pointBorderColor: "rgba(75,192,192,1)",
-                    pointBackgroundColor: "#fff",
-                    pointBorderWidth: 1,
-                    pointHoverRadius: 5,
-                    pointHoverBackgroundColor: "rgba(75,192,192,1)",
-                    pointHoverBorderColor: "rgba(220,220,220,1)",
-                    pointHoverBorderWidth: 2,
-                    pointRadius: 1,
-                    pointHitRadius: 10,
-                    data: this.data5thPer,
-                    spanGaps: false,
-                },
-              {
-                label: "Durchschnittswert ",
-                fill: false,
-                lineTension: 0.1,
-                backgroundColor: "#0967c5",
-                borderColor: "#0967c5",
-                borderCapStyle: 'butt',
-                borderDash: [],
-                borderDashOffset: 0.0,
-                borderJoinStyle: 'miter',
-                pointBorderColor: "rgba(75,192,192,1)",
-                pointBackgroundColor: "#fff",
-                pointBorderWidth: 1,
-                pointHoverRadius: 5,
-                pointHoverBackgroundColor: "rgba(75,192,192,1)",
-                pointHoverBorderColor: "rgba(220,220,220,1)",
-                pointHoverBorderWidth: 2,
-                pointRadius: 1,
-                pointHitRadius: 10,
-                data: this.dataMean,
-                spanGaps: false,
-            },
-              {
-                type: 'bubble',
-                label: "Wert Patient ",
-                fill: 2,
-                lineTension: 0.1,
-                backgroundColor: "#2e9217",
-                borderColor: "#2e9217",
-                borderCapStyle: 'butt',
-                borderDash: [],
-                borderDashOffset: 0.0,
-                borderJoinStyle: 'miter',
-                pointBorderColor: "rgba(75,192,192,1)",
-                pointBackgroundColor: "#fff",
-                pointBorderWidth: 1,
-                pointHoverRadius: 5,
-                pointHoverBackgroundColor: "rgba(75,192,192,1)",
-                pointHoverBorderColor: "rgba(220,220,220,1)",
-                pointHoverBorderWidth: 2,
-                pointRadius: 1,
-                pointHitRadius: 10,
-                data: this.patientData,
-                spanGaps: false,
-            }
-            ]
-        },
-        options: {
-          scales: {
-              yAxes: [{
-                  ticks: {
-                      beginAtZero:true
-                  }
-              }]
-          }
+      for (var group in resp.prediction){
+        this.patientGroups[group] = resp.prediction[group]
       }
-        
-    });
+
+      this.prepareGraphInfo()
+
+      console.log(this.data025thPer, this.data957thPer, this.dataMean, this.dataLabels)
+      this.initNewChart()
+      
 
     }, err => {
       console.log( 'we are sorry, but it seems that the ml-model does not like you!')
     });
 
+  }
+
+  prepareGraphInfo(){
+
+    for(var pGroup in this.patientGroups){
+      var patientGroup =  this.patientGroups[pGroup]
+
+      this.dataLabels.push(patientGroup['minAge'] + "-" + patientGroup['maxAge'])
+      this.dataMean.push(patientGroup['mu'])
+      this.data025thPer.push(patientGroup['percentile2.5'])
+      this.data957thPer.push(patientGroup['percentile97.5'])
+    }
+
+  }
+
+  getPatientAgeGroup(age: number){
+
+    for(var i in this.patientGroups){
+      if(this.patientGroups[i]['minAge'] <= age && this.patientGroups[i]['maxAge'] >= age){
+        return this.patientGroups[i]
+      }
+    }
+
+    return undefined;
+  }
+
+
+  showPatientInfo(){
+    var curPageG = this.getPatientAgeGroup(this.patientAge)
+    this.curPatientAgeGroup = curPageG
+
+    if(curPageG){
+      this.patientPercentile = (this.calculatePercentile(this.patientHbLevel, curPageG['lambda'], curPageG['mu'], curPageG['sigma'] ) * 100).toFixed(2)
+
+      while(this.patientData.length > 0) {
+        this.patientData.pop();
+      }
+
+      this.patientData.push(
+        {x:this.curPatientAgeGroup['minAge'] + "-" + this.curPatientAgeGroup['maxAge'] , y:this.patientHbLevel, r:5}
+      )
+      this.hbChart.update();
+    } else {
+      this.patientPercentile = -1
+    }
+
+      
 
   }
 
@@ -198,9 +150,62 @@ export class HomeComponent implements OnInit {
         {x:"> 60", y:this.patientHbLevels['data60'], r:5}
       )
     }
+
     
     this.hbChart.update();
+
+    this.calculatePercentile(9.0, 1, 9.0081, 0.98299)
   }
+
+  calculatePercentile(value: number, lambda: number, mean: number, variance: number){
+    
+      var x_bc = 0;
+      if(lambda != 0) {
+         
+         x_bc = ( Math.pow(value, lambda) - 1) / lambda;
+      } else {
+         x_bc = Math.log(value);
+      }
+      
+      var zScore = (x_bc - mean) / variance;
+
+      return this.getZPercent(zScore)
+
+
+  }
+
+  getZPercent(z: number) 
+  {
+    //z == number of standard deviations from the mean
+
+    //if z is greater than 6.5 standard deviations from the mean
+    //the number of significant digits will be outside of a reasonable 
+    //range
+    if ( z < -6.5)
+      return 0.0;
+    if( z > 6.5) 
+      return 1.0;
+
+    var factK = 1;
+    var sum = 0;
+    var term = 1;
+    var k = 0;
+    var loopStop = Math.exp(-23);
+    while(Math.abs(term) > loopStop) 
+    {
+      term = .3989422804 * Math.pow(-1,k) * Math.pow(z,k) / (2 * k + 1) / Math.pow(2,k) * Math.pow(z,k+1) / factK;
+      sum += term;
+      k++;
+      factK *= k;
+
+    }
+    sum += 0.5;
+
+    return sum;
+  }
+  
+
+
 
   login() {
     this.authorizationService.requestCode(this.clientID, this.redirectUrl, this.fhirUrl, 'patient/*.read');
@@ -246,6 +251,136 @@ export class HomeComponent implements OnInit {
         this.predictions_running = false;
         console.log(this.patient_predictions)
     });
+  }
+
+
+
+
+  initNewChart(){
+
+    this.hbChart = new Chart(this.hbChartElem.nativeElement, {
+      type: 'line',
+      data: {
+          labels: this.dataLabels,
+          datasets: [
+            {
+              label: "97.5th percentile",
+              fill: false,
+              lineTension: 0.1,
+              backgroundColor: "red",
+              borderColor: "red",
+              borderCapStyle: 'butt',
+              borderDash: [],
+              borderDashOffset: 0.0,
+              borderJoinStyle: 'miter',
+              pointBorderColor: "rgba(75,192,192,1)",
+              pointBackgroundColor: "#fff",
+              pointBorderWidth: 1,
+              pointHoverRadius: 5,
+              pointHoverBackgroundColor: "rgba(75,192,192,1)",
+              pointHoverBorderColor: "rgba(220,220,220,1)",
+              pointHoverBorderWidth: 2,
+              pointRadius: 1,
+              pointHitRadius: 10,
+              data: this.data957thPer,
+              spanGaps: false,
+          },
+              {
+                  label: "2.5th percentile",
+                  fill: 0,
+                  lineTension: 0.1,
+                  backgroundColor: "#f909002b",
+                  borderColor: "red",
+                  borderCapStyle: 'butt',
+                  borderDash: [],
+                  borderDashOffset: 0.0,
+                  borderJoinStyle: 'miter',
+                  pointBorderColor: "rgba(75,192,192,1)",
+                  pointBackgroundColor: "#fff",
+                  pointBorderWidth: 1,
+                  pointHoverRadius: 5,
+                  pointHoverBackgroundColor: "rgba(75,192,192,1)",
+                  pointHoverBorderColor: "rgba(220,220,220,1)",
+                  pointHoverBorderWidth: 2,
+                  pointRadius: 1,
+                  pointHitRadius: 10,
+                  data: this.data025thPer,
+                  spanGaps: false,
+              },
+            {
+              label: "Durchschnittswert ",
+              fill: false,
+              lineTension: 0.1,
+              backgroundColor: "#0967c5",
+              borderColor: "#0967c5",
+              borderCapStyle: 'butt',
+              borderDash: [],
+              borderDashOffset: 0.0,
+              borderJoinStyle: 'miter',
+              pointBorderColor: "rgba(75,192,192,1)",
+              pointBackgroundColor: "#fff",
+              pointBorderWidth: 1,
+              pointHoverRadius: 5,
+              pointHoverBackgroundColor: "rgba(75,192,192,1)",
+              pointHoverBorderColor: "rgba(220,220,220,1)",
+              pointHoverBorderWidth: 2,
+              pointRadius: 1,
+              pointHitRadius: 10,
+              data: this.dataMean,
+              spanGaps: false,
+          },
+            {
+              type: 'bubble',
+              label: "Wert Patient ",
+              fill: 2,
+              lineTension: 0.1,
+              backgroundColor: "#2e9217",
+              borderColor: "#2e9217",
+              borderCapStyle: 'butt',
+              borderDash: [],
+              borderDashOffset: 0.0,
+              borderJoinStyle: 'miter',
+              pointBorderColor: "rgba(75,192,192,1)",
+              pointBackgroundColor: "#fff",
+              pointBorderWidth: 1,
+              pointHoverRadius: 5,
+              pointHoverBackgroundColor: "rgba(75,192,192,1)",
+              pointHoverBorderColor: "rgba(220,220,220,1)",
+              pointHoverBorderWidth: 2,
+              pointRadius: 1,
+              pointHitRadius: 10,
+              data: this.patientData,
+              spanGaps: false,
+          }
+          ]
+      },
+      options: {
+        scales: {
+          xAxes: [{
+            scaleLabel:{
+              display: true,
+              labelString: "Patient Age Groups from-to (Years)"
+            }
+        }],
+            yAxes: [{
+                ticks: {
+                    beginAtZero:false
+                },
+                scaleLabel:{
+                  display: true,
+                  labelString: "Haemoglobin Amount (g/dl)"
+                }
+            }]
+        },
+        title: {
+          display: true,
+          text: 'Patient Haemoglobin Levels compared to age group'
+      }
+    }
+      
+  });
+
+  console.log(this.hbChart)
   }
 
 }
