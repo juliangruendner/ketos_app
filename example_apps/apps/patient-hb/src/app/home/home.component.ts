@@ -5,6 +5,7 @@ import { ActivatedRoute, Params } from '@angular/router';
 import { AuthorizationService } from '../services/authorization.service';
 import { Chart } from 'chart.js';
 import {PredictionService} from '../services/prediction.service';
+import { thisExpression } from 'babel-types';
 
 // Hack: fhirclient has no typescript support and is only meant to be imported in a <script> tag
 // This makes a object named FHIR globally available!
@@ -32,8 +33,11 @@ export class HomeComponent implements OnInit {
   predictions_running = false;
   predictions_done = false;
 
-  patientGroups: any [] = []
+  patientGroupsMale: any [] = []
+  patientGroupsFemale: any [] = []
+  curPatientGroups: any [] = []
   patientAge: number = -1
+  patientGender: string
   patientHbLevel: number 
   patientPercentile: number
 
@@ -56,21 +60,14 @@ export class HomeComponent implements OnInit {
     
     this.predictionService.predict(2, {"patient_ids": "1"}).subscribe(resp => {
       console.log(resp)
-      /*this.data5thPer = resp.prediction[0].prediction['quantile5']
-      this.data95thPer = resp.prediction[0].prediction['quantile95']
-      this.dataMean = resp.prediction[0].prediction['average']
-      this.initNewChart()*/
-      //this.data2_5thPer = predictionData2040['percentile2.5']
-      //his.data97_5thPer = predictionData2040['percentile97.5']
-
-      for (var group in resp.prediction){
-        this.patientGroups[group] = resp.prediction[group]
+      for (var group in resp.prediction["M"]){
+        this.patientGroupsMale[group] = resp.prediction["M"][group]
       }
 
-      this.prepareGraphInfo()
-
-      console.log(this.data025thPer, this.data957thPer, this.dataMean, this.dataLabels)
-      this.initNewChart()
+      for (var group in resp.prediction["F"]){
+        this.patientGroupsFemale[group] = resp.prediction["F"][group]
+      }
+      
       
 
     }, err => {
@@ -79,13 +76,23 @@ export class HomeComponent implements OnInit {
 
   }
 
+  emptyArray(array: any []){
+    while(array.length > 0) {
+      array.pop();
+    }
+  }
+
   prepareGraphInfo(){
 
-    for(var pGroup in this.patientGroups){
-      var patientGroup =  this.patientGroups[pGroup]
+    this.emptyArray(this.dataLabels)
+    this.emptyArray(this.dataMean)
+    this.emptyArray(this.data025thPer)
+    this.emptyArray(this.data957thPer)
 
+    for(var pGroup in this.curPatientGroups){
+      var patientGroup =  this.curPatientGroups[pGroup]
       this.dataLabels.push(patientGroup['minAge'] + "-" + patientGroup['maxAge'])
-      this.dataMean.push(patientGroup['mu'])
+      this.dataMean.push(patientGroup['percentile50'])
       this.data025thPer.push(patientGroup['percentile2.5'])
       this.data957thPer.push(patientGroup['percentile97.5'])
     }
@@ -94,9 +101,9 @@ export class HomeComponent implements OnInit {
 
   getPatientAgeGroup(age: number){
 
-    for(var i in this.patientGroups){
-      if(this.patientGroups[i]['minAge'] <= age && this.patientGroups[i]['maxAge'] >= age){
-        return this.patientGroups[i]
+    for(var i in this.curPatientGroups){
+      if(this.curPatientGroups[i]['minAge'] <= age && this.curPatientGroups[i]['maxAge'] >= age){
+        return this.curPatientGroups[i]
       }
     }
 
@@ -105,11 +112,21 @@ export class HomeComponent implements OnInit {
 
 
   showPatientInfo(){
+
+    if(this.patientGender == "M"){
+      this.curPatientGroups = this.patientGroupsMale
+      console.log(this.patientGroupsMale)
+    } else {
+      this.curPatientGroups = this.patientGroupsFemale
+    }
+    this.prepareGraphInfo()
+    this.initNewChart()
+
     var curPageG = this.getPatientAgeGroup(this.patientAge)
     this.curPatientAgeGroup = curPageG
 
     if(curPageG){
-      this.patientPercentile = (this.calculatePercentile(this.patientHbLevel, curPageG['lambda'], curPageG['mu'], curPageG['sigma'] ) * 100).toFixed(2)
+      this.patientPercentile = (this.calculatePercentile(this.patientHbLevel, curPageG['lambda'], curPageG['mu'], curPageG['sigma'] ) * 100)
 
       while(this.patientData.length > 0) {
         this.patientData.pop();
@@ -122,8 +139,6 @@ export class HomeComponent implements OnInit {
     } else {
       this.patientPercentile = -1
     }
-
-      
 
   }
 
@@ -363,9 +378,6 @@ export class HomeComponent implements OnInit {
             }
         }],
             yAxes: [{
-                ticks: {
-                    beginAtZero:false
-                },
                 scaleLabel:{
                   display: true,
                   labelString: "Haemoglobin Amount (g/dl)"

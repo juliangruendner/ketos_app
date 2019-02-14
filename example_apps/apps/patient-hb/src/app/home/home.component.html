@@ -8,6 +8,14 @@
                 <input class="uk-input uk-form-width-small" id="form-horizontal-text" type="number" required name="form_feature.name" [(ngModel)]="patientAge">
         </div>
         <div class="uk-width-1-4@s">
+                <label class="uk-form-label" for="form-horizontal-text">Gender</label>
+                <select class="uk-select genderSelect" id="image" type="number" required name="form_feature.name" [(ngModel)]="patientGender">
+                        <option value="M">Male</option>
+                        <option value="F">Female</option>
+                </select>
+
+        </div>
+        <div class="uk-width-1-4@s">
                 <label class="uk-form-label" for="form-horizontal-text">Haemoglobin Amount (g/dl)</label>
                 <input class="uk-input uk-form-width-small" id="form-horizontal-text" type="number" required name="form_feature.name" [(ngModel)]="patientHbLevel">
         </div>
@@ -37,6 +45,7 @@
                                 <thead>
                                     <tr>
                                         <th>Age</th>
+                                        <th>Gender</th>
                                         <th>Haemoglobin Value (g/dl)</th>
                                         <th>Percentile compared to Age group {{curPatientAgeGroup['minAge']}} to {{curPatientAgeGroup['maxAge']}}</th>
                                     </tr>
@@ -44,8 +53,9 @@
                                 <tbody>
                                     <tr>
                                         <td>{{patientAge}}</td>
+                                        <td>{{patientGender}}</td>
                                         <td>{{patientHbLevel}}</td>
-                                        <td>{{patientPercentile}}th</td>
+                                        <td>{{patientPercentile.toFixed(2)}}th</td>
                                     </tr>
                                 </tbody>
                             </table>
