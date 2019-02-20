@@ -1,5 +1,5 @@
 <div>
-<h1>Patients Haemoglobin levels by age groups</h1>
+<h3>Patients Hemoglobin Levels by Age Groups</h3>
 
 
 <form class="uk-grid-small" uk-grid>
@@ -16,11 +16,11 @@
 
         </div>
         <div class="uk-width-1-4@s">
-                <label class="uk-form-label" for="form-horizontal-text">Haemoglobin Amount (g/dl)</label>
+                <label class="uk-form-label" for="form-horizontal-text">Hemoglobin Level (g/dl)</label>
                 <input class="uk-input uk-form-width-small" id="form-horizontal-text" type="number" required name="form_feature.name" [(ngModel)]="patientHbLevel">
         </div>
 
-        <button (click)="showPatientInfo()">Show patient Information</button>
+        <button (click)="showPatientInfo()">Show Patient Information</button>
 </form>
 
 <!--form class="uk-grid-small" uk-grid>
@@ -46,15 +46,15 @@
                                     <tr>
                                         <th>Age</th>
                                         <th>Gender</th>
-                                        <th>Haemoglobin Value (g/dl)</th>
-                                        <th>Percentile compared to Age group {{curPatientAgeGroup['minAge']}} to {{curPatientAgeGroup['maxAge']}}</th>
+                                        <th>Hemoglobin Level (g/dl)</th>
+                                        <th>Percentile compared to Age Group {{curPatientAgeGroup['minAge']}} to {{curPatientAgeGroup['maxAge']}}</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     <tr>
-                                        <td>{{patientAge}}</td>
-                                        <td>{{patientGender}}</td>
-                                        <td>{{patientHbLevel}}</td>
+                                        <td>{{patientAgeShow}}</td>
+                                        <td>{{getGender(patientGenderShow)}}</td>
+                                        <td>{{patientHbLevelShow}}</td>
                                         <td>{{patientPercentile.toFixed(2)}}th</td>
                                     </tr>
                                 </tbody>

@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild, OnChanges } from '@angular/core';
 import { environment } from '../../environments/environment'
 import { Prediction } from '../models/prediction'
 import { ActivatedRoute, Params } from '@angular/router';
@@ -40,6 +40,9 @@ export class HomeComponent implements OnInit {
   patientGender: string
   patientHbLevel: number 
   patientPercentile: number
+  patientAgeShow : number
+  patientGenderShow : string
+  patientHbLevelShow : number
 
   data025thPer: any[] = []
   data957thPer: any[] = []
@@ -59,7 +62,6 @@ export class HomeComponent implements OnInit {
   ngOnInit() {
     
     this.predictionService.predict(2, {"patient_ids": "1"}).subscribe(resp => {
-      console.log(resp)
       for (var group in resp.prediction["M"]){
         this.patientGroupsMale[group] = resp.prediction["M"][group]
       }
@@ -113,9 +115,12 @@ export class HomeComponent implements OnInit {
 
   showPatientInfo(){
 
+    this.patientAgeShow = this.patientAge
+    this.patientHbLevelShow = this.patientHbLevel
+    this.patientGenderShow = this.patientGender
+
     if(this.patientGender == "M"){
       this.curPatientGroups = this.patientGroupsMale
-      console.log(this.patientGroupsMale)
     } else {
       this.curPatientGroups = this.patientGroupsFemale
     }
@@ -264,7 +269,6 @@ export class HomeComponent implements OnInit {
 
         this.predictions_done = true;
         this.predictions_running = false;
-        console.log(this.patient_predictions)
     });
   }
 
@@ -323,7 +327,7 @@ export class HomeComponent implements OnInit {
                   spanGaps: false,
               },
             {
-              label: "Durchschnittswert ",
+              label: "mean value ",
               fill: false,
               lineTension: 0.1,
               backgroundColor: "#0967c5",
@@ -346,7 +350,7 @@ export class HomeComponent implements OnInit {
           },
             {
               type: 'bubble',
-              label: "Wert Patient ",
+              label: "value patient ",
               fill: 2,
               lineTension: 0.1,
               backgroundColor: "#2e9217",
@@ -374,25 +378,31 @@ export class HomeComponent implements OnInit {
           xAxes: [{
             scaleLabel:{
               display: true,
-              labelString: "Patient Age Groups from-to (Years)"
+              labelString: "patient age groups from-to (years)"
             }
         }],
             yAxes: [{
                 scaleLabel:{
                   display: true,
-                  labelString: "Haemoglobin Amount (g/dl)"
+                  labelString: "hemoglobin level (g/dl)"
                 }
             }]
         },
         title: {
           display: true,
-          text: 'Patient Haemoglobin Levels compared to age group'
+          text: 'patient hemoglobin levels compared to age group'
       }
     }
       
   });
 
-  console.log(this.hbChart)
   }
 
+  getGender(gender: string){
+    if(gender == "M"){
+        return "Male"
+    }else{
+        return "Female"
+    }
+  }
 }
